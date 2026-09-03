@@ -1,0 +1,11 @@
+# Visual Studio local user settings and cache
+.vs/
+# Build output folders (.NET) across src and test
+bin/
+obj/
+
+# Local Azurite storage folder specifically inside src
+src/**/.azurite/
+
+# Environment-specific settings
+appsettings.Development.json

@@ -1,0 +1,24 @@
+{
+  "UserConfig": {
+    "Namespaces": [
+      {
+        "Name": "sbemulatorns",
+        "Queues": [
+          {
+            "Name": "email",
+            "Properties": {
+              "DeadLetteringOnMessageExpiration": false,
+              "DefaultMessageTimeToLive": "PT1H",
+              "DuplicateDetectionHistoryTimeWindow": "PT20S",
+              "MaxDeliveryCount": 10,
+              "RequiresDuplicateDetection": false
+            }
+          }
+        ]
+      }
+    ],
+    "Logging": {
+      "Type": "Console"
+    }
+  }
+}

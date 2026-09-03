@@ -1,0 +1,20 @@
+﻿services:
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    container_name: notification-smtp4dev
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:5000:80"
+      - "127.0.0.1:2525:25"
+
+    volumes:
+      - smtp4dev-data:/smtp4dev
+
+    environment:
+      ServerOptions__Urls: "http://*:80"
+      ServerOptions__HostName: "smtp4dev"
+
+volumes:
+  smtp4dev-data:
