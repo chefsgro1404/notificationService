@@ -1,0 +1,56 @@
+name: CD - Deploy Azure Function
+
+on:
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'func-notification-prod-001'
+  PROJECT_PATH: 'src/NotificationService.Functions/NotificationService.Functions.csproj'
+  DOTNET_VERSION: '8.0.x'
+  PUBLISH_PATH: './publish'
+
+jobs:
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+
+      - name: Publish
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            --configuration Release \
+            --output ${{ env.PUBLISH_PATH }}
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Azure Function
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.PUBLISH_PATH }}
