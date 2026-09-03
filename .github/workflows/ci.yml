@@ -11,7 +11,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  PROJECT_PATH: 'src/Notification.Function/Notification.Function.csproj'
+  PROJECT_PATH: 'src/NotificationService.Functions/NotificationService.Functions.csproj.csproj'
 
 jobs:
   build:
