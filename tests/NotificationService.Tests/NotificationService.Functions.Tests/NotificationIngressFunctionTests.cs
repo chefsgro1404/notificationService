@@ -315,6 +315,7 @@ public class NotificationIngressFunctionTests
             badRequest.StatusCode);
     }
 
+    [Fact]
     public async Task Run_AcceptsNotification_WhenRequestIsValid()
     {
         // Arrange

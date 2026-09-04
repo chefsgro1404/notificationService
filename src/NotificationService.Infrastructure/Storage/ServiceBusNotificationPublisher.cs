@@ -16,6 +16,7 @@ public sealed class ServiceBusNotificationPublisher
         _client = client;
     }
 
+    /// <inheritdoc />
     public async Task PublishAsync(
         NotificationMessage message,
         CancellationToken cancellationToken)

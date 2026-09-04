@@ -1,6 +1,7 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using NotificationService.Application.Interfaces;
+using NotificationService.Domain.Entities;
 using NotificationService.Infrastructure.Configuration;
 
 namespace NotificationService.Infrastructure.Storage;
@@ -32,6 +33,7 @@ public sealed class AzureTableAuditStore : IAuditStore
             cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task CreateAcceptedAsync(
         Guid notificationId,
         string channel,
@@ -64,6 +66,7 @@ public sealed class AzureTableAuditStore : IAuditStore
             cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task UpdateStatusAsync(
     Guid notificationId,
     string channel,
@@ -106,6 +109,7 @@ public sealed class AzureTableAuditStore : IAuditStore
             cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<bool> HasBeenProcessedAsync(
         Guid notificationId,
         string channel,

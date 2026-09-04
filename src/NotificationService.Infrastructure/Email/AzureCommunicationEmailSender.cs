@@ -37,6 +37,7 @@ public sealed class AzureCommunicationEmailSender
             _options.ConnectionString);
     }
 
+    /// <inheritdoc />
     public async Task<string?> SendAsync(
     IEnumerable<string> recipients,
     string? subject,
@@ -61,6 +62,7 @@ public sealed class AzureCommunicationEmailSender
             new EmailContent(
                 subject ?? string.Empty)
             {
+                Html = text,
                 PlainText = text
             };
 

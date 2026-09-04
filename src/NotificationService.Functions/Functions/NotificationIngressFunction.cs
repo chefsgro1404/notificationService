@@ -27,19 +27,19 @@ public sealed class NotificationIngressFunction
         _logger = logger;
     }
 
-        [Function("NotificationIngress")]
-        public async Task<IActionResult> Run(
-                [HttpTrigger(
+    [Function("NotificationIngress")]
+    public async Task<IActionResult> Run(
+            [HttpTrigger(
                     AuthorizationLevel.Function,
                     "post",
                     Route = "notifications")]
             HttpRequest request,
-            CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         if (!request.HasFormContentType)
         {
             return new BadRequestObjectResult(
-                new 
+                new
                 {
                     error = "Content-Type must be multipart/form-data."
                 });
@@ -61,7 +61,7 @@ public sealed class NotificationIngressFunction
         }
 
         var recipients = form["recipient"]
-            .Select(x => x.ToString())
+            .Select(x => x!.ToString())
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
             .Distinct(StringComparer.OrdinalIgnoreCase)

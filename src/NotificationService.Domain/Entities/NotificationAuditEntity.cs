@@ -1,7 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 
-namespace NotificationService.Infrastructure.Storage;
+namespace NotificationService.Domain.Entities;
 
 public sealed class NotificationAuditEntity : ITableEntity
 {

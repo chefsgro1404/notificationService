@@ -33,6 +33,7 @@ public sealed class AzureBlobStorage : IBlobStorage
             cancellationToken: cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<string> UploadAsync(
         Stream content,
         string fileName,
@@ -65,6 +66,7 @@ public sealed class AzureBlobStorage : IBlobStorage
         return blobName;
     }
 
+    /// <inheritdoc />
     public async Task<Stream> OpenReadAsync(
         string blobName,
         CancellationToken cancellationToken)
@@ -75,6 +77,7 @@ public sealed class AzureBlobStorage : IBlobStorage
             cancellationToken: cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(
         string blobName,
         CancellationToken cancellationToken)

@@ -7,7 +7,7 @@ using NotificationService.Application.Models;
 using NotificationService.Infrastructure.Configuration;
 
 namespace NotificationService.Infrastructure.Email;
-
+/// <inheritdoc />
 public sealed class Smtp4DevEmailSender : IEmailSender
 {
     private readonly EmailOptions _options;
@@ -31,6 +31,7 @@ public sealed class Smtp4DevEmailSender : IEmailSender
         }
     }
 
+    /// <inheritdoc />
     public async Task<string?> SendAsync(
     IEnumerable<string> recipients,
     string? subject,
@@ -69,7 +70,8 @@ public sealed class Smtp4DevEmailSender : IEmailSender
         var body =
             new BodyBuilder
             {
-                TextBody = text
+                TextBody = text,
+                HtmlBody = text
             };
 
         if (attachments is not null)
@@ -121,7 +123,7 @@ public sealed class Smtp4DevEmailSender : IEmailSender
         {
             await smtp.AuthenticateAsync(
                 _options.Smtp.Username,
-                _options.Smtp.Password,
+                _options.Smtp.Password!,
                 cancellationToken);
         }
 
