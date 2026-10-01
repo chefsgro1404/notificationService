@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
+import TestCallDialog from "@/components/TestCallDialog";
 import { MAX_CATEGORY_NAME, validateCategoryName, type AudioCategory } from "@/lib/categories";
 import { formatDateTime } from "@/lib/logs";
 import { useJson } from "@/lib/use-json";
@@ -9,12 +10,19 @@ import styles from "./logs.module.css";
 
 type Notice = { kind: "success" | "error"; message: string } | null;
 
-/** Lists audio categories and adds new ones. Audio is linked to a category from the Audio Log. */
+/**
+ * Lists audio categories, adds new ones, and places test calls that play a category's audio.
+ * Audio is linked to a category from the Audio Log.
+ */
 export default function AudioCategories() {
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
   const [reloadToken, setReloadToken] = useState(0);
+  const [testing, setTesting] = useState<AudioCategory | null>(null);
+  const [lastNumber, setLastNumber] = useState("");
+
+  const closeDialog = useCallback(() => setTesting(null), []);
 
   const { data, error, loading } = useJson<AudioCategory[]>("/api/audio-categories", reloadToken);
   const rows = Array.isArray(data) ? data : null;
@@ -102,6 +110,7 @@ export default function AudioCategories() {
               <th scope="col">Name</th>
               <th scope="col">Linked audio</th>
               <th scope="col">Updated</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -117,12 +126,25 @@ export default function AudioCategories() {
                   )}
                 </td>
                 <td className={styles.nowrap}>{formatDateTime(category.updatedAtUtc)}</td>
+                <td>
+                  {category.audioId !== null && (
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        onClick={() => setTesting(category)}
+                        aria-label={`Test call for ${category.name}`}
+                      >
+                        Test call
+                      </button>
+                    </div>
+                  )}
+                </td>
               </tr>
             ))}
 
             {rows && rows.length === 0 && (
               <tr>
-                <td colSpan={4} className={styles.empty}>
+                <td colSpan={5} className={styles.empty}>
                   No categories yet. Add one above, then link audio to it from the Audio Log.
                 </td>
               </tr>
@@ -130,7 +152,7 @@ export default function AudioCategories() {
 
             {!rows && loading && (
               <tr>
-                <td colSpan={4} className={styles.empty}>
+                <td colSpan={5} className={styles.empty}>
                   Loading…
                 </td>
               </tr>
@@ -138,6 +160,15 @@ export default function AudioCategories() {
           </tbody>
         </table>
       </div>
+
+      {testing && (
+        <TestCallDialog
+          category={testing}
+          initialNumber={lastNumber}
+          onClose={closeDialog}
+          onNumberUsed={setLastNumber}
+        />
+      )}
     </div>
   );
 }

@@ -116,3 +116,36 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.input {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 6px;
+  padding: 8px 12px;
+  font: inherit;
+  color: var(--text);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.success {
+  margin-top: 12px;
+  padding: 10px 12px;
+  color: var(--success);
+  background: var(--success-bg);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}

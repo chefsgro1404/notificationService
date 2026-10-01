@@ -14,7 +14,7 @@ export default function AudioCategoriesPage() {
         <p>
           Each category plays one audio file on voice calls. Add a category here, then use <strong>Link</strong> on an
           active audio in the Audio Log to choose its audio. Voice notifications send the category&rsquo;s id as{" "}
-          <code>categoryId</code>.
+          <code>categoryId</code>. Use <strong>Test call</strong> to hear a category&rsquo;s audio on a real phone.
         </p>
       </header>
 

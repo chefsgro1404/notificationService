@@ -109,3 +109,124 @@ describe("AudioCategories", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Unable to list audio categories.");
   });
 });
+
+describe("AudioCategories test call", () => {
+  function route(testCall: (body: { recipient: string }) => Response | Promise<Response>) {
+    fetchMock.mockImplementation(async (input, init) => {
+      if (String(input).endsWith("/test-call")) {
+        return testCall(JSON.parse(String(init?.body)));
+      }
+      return Response.json([category(1, "Packing_Slip_Not_Generated", 1), category(2, "Sales")]);
+    });
+  }
+
+  async function openFor(name: string) {
+    await userEvent.click(await screen.findByRole("button", { name: `Test call for ${name}` }));
+    return screen.getByRole("dialog");
+  }
+
+  it("offers Test call only for categories with linked audio", async () => {
+    route(() => Response.json({}));
+    render(<AudioCategories />);
+
+    const linked = (await screen.findByText("Packing_Slip_Not_Generated")).closest("tr")!;
+    const unlinked = screen.getByText("Sales").closest("tr")!;
+
+    expect(within(linked).getByRole("button", { name: "Test call for Packing_Slip_Not_Generated" })).toBeInTheDocument();
+    expect(within(unlinked).queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("places the call and remembers the number for the next test", async () => {
+    const bodies: string[] = [];
+    route((body) => {
+      bodies.push(body.recipient);
+      return Response.json({ notificationId: "91ab7746", status: "Accepted" }, { status: 202 });
+    });
+    render(<AudioCategories />);
+
+    let dialog = await openFor("Packing_Slip_Not_Generated");
+    expect(within(dialog).getByRole("heading", { name: "Test call: Packing_Slip_Not_Generated" })).toBeInTheDocument();
+    expect(within(dialog).getByText(/plays audio #1/)).toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "Call now" })).toBeDisabled();
+
+    await userEvent.type(within(dialog).getByLabelText("Phone number"), "+43 688 64748566");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+
+    expect(await within(dialog).findByRole("status")).toHaveTextContent("Calling +4368864748566 now.");
+    expect(within(dialog).getByRole("status")).toHaveTextContent("91ab7746");
+    expect(within(dialog).getByRole("link", { name: "Notification Log" })).toHaveAttribute("href", "/notification-logs");
+    expect(bodies).toEqual(["+4368864748566"]);
+    const call = fetchMock.mock.calls.find(([url]) => String(url).endsWith("/test-call"))!;
+    expect(call[0]).toBe("/api/audio-categories/1/test-call");
+
+    await userEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    dialog = await openFor("Packing_Slip_Not_Generated");
+    expect(within(dialog).getByLabelText("Phone number")).toHaveValue("+4368864748566");
+  });
+
+  it("checks the number before calling", async () => {
+    route(() => Response.json({}));
+    render(<AudioCategories />);
+
+    const dialog = await openFor("Packing_Slip_Not_Generated");
+    await userEvent.type(within(dialog).getByLabelText("Phone number"), "0688 1234");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+
+    expect(within(dialog).getByRole("alert")).toHaveTextContent("international format");
+    expect(fetchMock.mock.calls.some(([url]) => String(url).endsWith("/test-call"))).toBe(false);
+  });
+
+  it("shows the function's error, a generic error and a network error", async () => {
+    let calls = 0;
+    route(() => {
+      calls += 1;
+      if (calls === 1) return Response.json({ error: "Category \"Packing_Slip_Not_Generated\" has no linked audio." }, { status: 400 });
+      if (calls === 2) return new Response("oops", { status: 502 });
+      throw new TypeError("offline");
+    });
+    render(<AudioCategories />);
+
+    const dialog = await openFor("Packing_Slip_Not_Generated");
+    await userEvent.type(within(dialog).getByLabelText("Phone number"), "+18005551234");
+
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("has no linked audio");
+
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+    await waitFor(() => expect(within(dialog).getByRole("alert")).toHaveTextContent("Could not start the test call."));
+
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+    await waitFor(() => expect(within(dialog).getByRole("alert")).toHaveTextContent("Network error."));
+  });
+
+  it("treats a success without a notification id as an error", async () => {
+    route(() => Response.json({ status: "Accepted" }, { status: 202 }));
+    render(<AudioCategories />);
+
+    const dialog = await openFor("Packing_Slip_Not_Generated");
+    await userEvent.type(within(dialog).getByLabelText("Phone number"), "+18005551234");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Call now" }));
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("Could not start the test call.");
+  });
+
+  it("closes with Cancel, Escape or the backdrop", async () => {
+    route(() => Response.json({}));
+    render(<AudioCategories />);
+
+    let dialog = await openFor("Packing_Slip_Not_Generated");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    await openFor("Packing_Slip_Not_Generated");
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    dialog = await openFor("Packing_Slip_Not_Generated");
+    await userEvent.click(dialog.parentElement!);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+

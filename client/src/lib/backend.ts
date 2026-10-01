@@ -21,13 +21,20 @@ export function errorMessageOf(payload: unknown): string | null {
     : null;
 }
 
+/** A backend call: JSON `body`, or multipart `form` for endpoints that read form fields. */
+export interface BackendRequest {
+  method: string;
+  body?: unknown;
+  form?: FormData;
+}
+
 /**
  * Calls the backend and parses its JSON body. Configuration errors, timeouts and network failures are
  * turned into ready-to-return error responses (500, 504, 502).
  */
 export async function callBackend(
   path: string,
-  init: { method: string; body?: unknown } = { method: "GET" },
+  init: BackendRequest = { method: "GET" },
 ): Promise<BackendResult> {
   const baseUrl = process.env.FUNCTIONS_BASE_URL?.replace(/\/+$/, "");
 
@@ -38,7 +45,8 @@ export async function callBackend(
 
   const headers: Record<string, string> = {};
 
-  if (init.body !== undefined) {
+  // For FormData, fetch sets the multipart Content-Type (with its boundary) itself.
+  if (init.body !== undefined && init.form === undefined) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -52,7 +60,7 @@ export async function callBackend(
     response = await fetch(`${baseUrl}${path}`, {
       method: init.method,
       headers,
-      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+      body: init.form ?? (init.body === undefined ? undefined : JSON.stringify(init.body)),
       cache: "no-store",
       signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
     });
@@ -78,7 +86,7 @@ export async function callBackend(
  */
 export async function proxyJson(
   path: string,
-  init?: { method: string; body?: unknown },
+  init?: BackendRequest,
 ): Promise<Response> {
   const result = await callBackend(path, init);
 
