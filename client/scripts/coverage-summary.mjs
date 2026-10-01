@@ -1,8 +1,16 @@
 // Prints the Vitest coverage totals (coverage/coverage-summary.json) as a Markdown table for
 // $GITHUB_STEP_SUMMARY. Usage: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
-import { readFileSync } from "node:fs";
+// When an earlier step failed before the tests ran there is no report; that is not an error here.
+import { existsSync, readFileSync } from "node:fs";
 
-const { total } = JSON.parse(readFileSync(new URL("../coverage/coverage-summary.json", import.meta.url), "utf8"));
+const reportUrl = new URL("../coverage/coverage-summary.json", import.meta.url);
+
+if (!existsSync(reportUrl)) {
+  console.log("### Client coverage\n\nNo coverage report: the tests did not run.");
+  process.exit(0);
+}
+
+const { total } = JSON.parse(readFileSync(reportUrl, "utf8"));
 const metrics = ["lines", "branches", "functions", "statements"];
 
 console.log("### Client coverage\n");
