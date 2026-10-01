@@ -6,6 +6,9 @@ using NotificationService.Application.Models;
 
 namespace NotificationService.Functions.Functions;
 
+/// <summary>
+/// Service Bus-triggered function that sends queued email notifications and updates the audit record.
+/// </summary>
 public sealed class EmailNotificationFunction
 {
     private readonly IEmailSender _emailSender;
@@ -25,6 +28,12 @@ public sealed class EmailNotificationFunction
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processes one email notification from the "email" queue.
+    /// </summary>
+    /// <param name="message">The serialized <see cref="NotificationMessage"/>.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     [Function("EmailNotificationFunction")]
     public async Task Run(
     [ServiceBusTrigger(

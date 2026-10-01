@@ -9,3 +9,25 @@ src/**/.azurite/
 
 # Environment-specific settings
 appsettings.Development.json
+# Code coverage output
+coverage/
+coveragereport/
+
+# Local Azurite emulator data (repo root and anywhere else)
+__azurite_db_*.json
+__blobstorage__/
+__queuestorage__/
+AzuriteConfig
+.azurite/
+
+# Claude Code / AI assistant files
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# Test results
+TestResults/
+*.trx
+
+# Old prerecorded voice audio (voice audio now comes from audio categories)
+src/Audio/

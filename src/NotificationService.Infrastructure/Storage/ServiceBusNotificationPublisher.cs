@@ -5,6 +5,9 @@ using NotificationService.Application.Models;
 
 namespace NotificationService.Infrastructure.Messaging;
 
+/// <summary>
+/// Publishes notification messages to the Service Bus queue named after the channel.
+/// </summary>
 public sealed class ServiceBusNotificationPublisher
     : INotificationPublisher
 {

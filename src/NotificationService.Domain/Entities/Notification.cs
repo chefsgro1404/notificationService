@@ -2,6 +2,9 @@
 
 namespace NotificationService.Domain.Entities;
 
+/// <summary>
+/// Domain entity representing a notification and its delivery status.
+/// </summary>
 public sealed class Notification
 {
     public Guid NotificationId { get; private set; }
@@ -67,26 +70,41 @@ public sealed class Notification
         Status = NotificationStatus.Accepted;
     }
 
+    /// <summary>
+    /// Marks the notification as queued for delivery.
+    /// </summary>
     public void MarkQueued()
     {
         Status = NotificationStatus.Queued;
     }
 
+    /// <summary>
+    /// Marks the notification as being processed.
+    /// </summary>
     public void MarkProcessing()
     {
         Status = NotificationStatus.Processing;
     }
 
+    /// <summary>
+    /// Marks the notification as sent.
+    /// </summary>
     public void MarkSent()
     {
         Status = NotificationStatus.Sent;
     }
 
+    /// <summary>
+    /// Marks the notification as waiting to be retried.
+    /// </summary>
     public void MarkRetrying()
     {
         Status = NotificationStatus.Retrying;
     }
 
+    /// <summary>
+    /// Marks the notification as failed.
+    /// </summary>
     public void MarkFailed()
     {
         Status = NotificationStatus.Failed;

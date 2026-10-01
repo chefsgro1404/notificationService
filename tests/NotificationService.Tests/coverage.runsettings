@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Code coverage settings for the "XPlat Code Coverage" collector (coverlet).
+  Excluded: source-generated code (Azure Functions worker generators, *.g.cs) and
+  Program.cs (host bootstrap only; it cannot be unit tested).
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Include>[NotificationService.*]*</Include>
+          <Exclude>[NotificationService.Tests]*</Exclude>
+          <ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <ExcludeByFile>**/*.g.cs,**/NotificationService.Functions/Program.cs</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

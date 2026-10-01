@@ -1,0 +1,113 @@
+:root {
+  --background: #f7f7f8;
+  --surface: #ffffff;
+  --text: #18181b;
+  --muted: #5f5f6b;
+  --border: #dcdce2;
+  --brand: #f15a24;
+  --brand-2: #f7931e;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-contrast: #ffffff;
+  --warning: #b45309;
+  --error: #b91c1c;
+  --error-bg: #fef2f2;
+  --success: #15803d;
+  --success-bg: #f0fdf4;
+  --warning-bg: #fffbeb;
+
+  --status-on-color: #ffffff;
+  --status-green: #15803d;
+  --status-green-bg: #f0fdf4;
+  --status-red: #b91c1c;
+  --status-red-bg: #fef2f2;
+  --status-amber: #a16207;
+  --status-amber-bg: #fefce8;
+  --status-orange: #c2410c;
+  --status-orange-bg: #fff7ed;
+  --status-blue: #1d4ed8;
+  --status-blue-soft: #3b82f6;
+  --status-blue-bg: #eff6ff;
+  --status-gray: #52525b;
+  --status-gray-bg: #f4f4f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f0f12;
+    --surface: #18181c;
+    --text: #ededf0;
+    --muted: #a1a1aa;
+    --border: #2e2e35;
+    --brand: #f26b3a;
+    --brand-2: #e8841b;
+    --accent: #60a5fa;
+    --accent-hover: #93c5fd;
+    --accent-contrast: #0b1220;
+    --warning: #fbbf24;
+    --error: #fca5a5;
+    --error-bg: #2a1215;
+    --success: #86efac;
+    --success-bg: #0f2417;
+    --warning-bg: #2a2110;
+
+    --status-on-color: #0b0b0e;
+    --status-green: #4ade80;
+    --status-green-bg: #0f2417;
+    --status-red: #f87171;
+    --status-red-bg: #2a1215;
+    --status-amber: #facc15;
+    --status-amber-bg: #262110;
+    --status-orange: #fb923c;
+    --status-orange-bg: #2a1a0e;
+    --status-blue: #60a5fa;
+    --status-blue-soft: #93c5fd;
+    --status-blue-bg: #0f1a2e;
+    --status-gray: #a1a1aa;
+    --status-gray-bg: #1f1f24;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  background: var(--background);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 56px 16px;
+}
+
+.container.wide {
+  max-width: 1200px;
+  padding-top: 32px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.header p {
+  color: var(--muted);
+  line-height: 1.5;
+}

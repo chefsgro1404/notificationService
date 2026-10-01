@@ -1,5 +1,8 @@
 ﻿namespace NotificationService.Application.Interfaces;
 
+/// <summary>
+/// Defines operations for sending Telegram notifications.
+/// </summary>
 public interface ITelegramSender
 {
     /// <summary>

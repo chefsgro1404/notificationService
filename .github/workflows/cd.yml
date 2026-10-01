@@ -33,8 +33,34 @@ jobs:
       - name: Build
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 
-      - name: Test
-        run: dotnet test --configuration Release --no-build
+      - name: Test with coverage
+        run: >
+          dotnet test tests/NotificationService.Tests/NotificationService.Tests.csproj
+          --configuration Release
+          --collect:"XPlat Code Coverage"
+          --results-directory ./coverage
+
+      - name: Build coverage report
+        if: ${{ !cancelled() }}
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        with:
+          reports: coverage/**/coverage.cobertura.xml
+          targetdir: coveragereport
+          reporttypes: HtmlInline;MarkdownSummaryGithub
+
+      - name: Show coverage in run summary
+        if: ${{ !cancelled() }}
+        run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coveragereport
+
+      - name: Require coverage above 90%
+        run: python3 .github/scripts/check-coverage.py ./coverage 90
 
       - name: Publish
         run: |

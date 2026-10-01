@@ -6,9 +6,18 @@ using NotificationService.Infrastructure.Configuration;
 
 namespace NotificationService.Infrastructure.Messaging;
 
+/// <summary>
+/// Registers the Service Bus client and notification publisher.
+/// </summary>
 public static class MassTransitConfiguration
 {
 
+    /// <summary>
+    /// Adds the Service Bus client and <see cref="INotificationPublisher"/>.
+    /// </summary>
+    /// <param name="services">The service collection to add to.</param>
+    /// <param name="configuration">The application configuration.</param>
+    /// <returns>The same service collection, for chaining.</returns>
     public static IServiceCollection AddNotificationMessaging(
         this IServiceCollection services,
         IConfiguration configuration)

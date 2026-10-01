@@ -1,5 +1,8 @@
 ﻿namespace NotificationService.Infrastructure.Configuration;
 
+/// <summary>
+/// SMTP server settings used by the SMTP email provider ("Email:Smtp" section).
+/// </summary>
 public sealed class SmtpOptions
 {
     public string Host { get; init; } = "localhost";

@@ -1,5 +1,8 @@
 ﻿namespace NotificationService.Infrastructure.Configuration;
 
+/// <summary>
+/// Service Bus connection and queue settings ("ServiceBus" section).
+/// </summary>
 public sealed class ServiceBusOptions
 {
     public const string SectionName = "ServiceBus";

@@ -1,5 +1,6 @@
 ﻿namespace NotificationService.Application.Interfaces;
 
+/// <summary>
 /// Defines operations for sending SMS notifications.
 /// </summary>
 public interface ISmsSender

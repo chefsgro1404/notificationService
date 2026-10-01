@@ -3,6 +3,9 @@ using NotificationService.Domain.Enums;
 
 namespace NotificationService.Application.Models;
 
+/// <summary>
+/// Incoming notification request fields (channel, recipient, subject, text and optional file).
+/// </summary>
 public sealed class NotificationRequest
 {
     public NotificationChannel Channel { get; set; }

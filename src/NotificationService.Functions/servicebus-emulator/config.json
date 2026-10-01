@@ -13,6 +13,16 @@
               "MaxDeliveryCount": 10,
               "RequiresDuplicateDetection": false
             }
+          },
+          {
+            "Name": "telegram",
+            "Properties": {
+              "DeadLetteringOnMessageExpiration": false,
+              "DefaultMessageTimeToLive": "PT1H",
+              "DuplicateDetectionHistoryTimeWindow": "PT20S",
+              "MaxDeliveryCount": 10,
+              "RequiresDuplicateDetection": false
+            }
           }
         ]
       }

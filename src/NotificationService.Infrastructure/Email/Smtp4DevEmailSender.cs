@@ -11,11 +11,20 @@ namespace NotificationService.Infrastructure.Email;
 public sealed class Smtp4DevEmailSender : IEmailSender
 {
     private readonly EmailOptions _options;
+    private readonly Func<ISmtpClient> _smtpClientFactory;
 
     public Smtp4DevEmailSender(
         IOptions<EmailOptions> options)
+        : this(options, CreateSmtpClient)
+    {
+    }
+
+    internal Smtp4DevEmailSender(
+        IOptions<EmailOptions> options,
+        Func<ISmtpClient> smtpClientFactory)
     {
         _options = options.Value;
+        _smtpClientFactory = smtpClientFactory;
 
         if (string.IsNullOrWhiteSpace(_options.From))
         {
@@ -30,6 +39,9 @@ public sealed class Smtp4DevEmailSender : IEmailSender
                 "Email:Smtp:Host is required.");
         }
     }
+
+    internal static ISmtpClient CreateSmtpClient() =>
+        new SmtpClient();
 
     /// <inheritdoc />
     public async Task<string?> SendAsync(
@@ -105,7 +117,7 @@ public sealed class Smtp4DevEmailSender : IEmailSender
             body.ToMessageBody();
 
         using var smtp =
-            new SmtpClient();
+            _smtpClientFactory();
 
         var security =
             _options.Smtp.UseSsl

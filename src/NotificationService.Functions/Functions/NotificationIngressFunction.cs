@@ -8,6 +8,10 @@ using NotificationService.Domain.Enums;
 
 namespace NotificationService.Functions.Functions;
 
+/// <summary>
+/// HTTP-triggered function that accepts a notification (multipart/form-data), stores attachments,
+/// creates the audit record and queues it for the channel processor.
+/// </summary>
 public sealed class NotificationIngressFunction
 {
     private readonly IBlobStorage _blobStorage;
@@ -27,6 +31,12 @@ public sealed class NotificationIngressFunction
         _logger = logger;
     }
 
+    /// <summary>
+    /// Accepts a notification request and queues it.
+    /// </summary>
+    /// <param name="request">The multipart/form-data HTTP request.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>202 Accepted with the notification id, 400 for invalid input, or 500 on failure.</returns>
     [Function("NotificationIngress")]
     public async Task<IActionResult> Run(
             [HttpTrigger(

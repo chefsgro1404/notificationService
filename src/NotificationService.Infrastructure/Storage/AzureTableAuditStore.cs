@@ -1,27 +1,41 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using NotificationService.Application.Interfaces;
+using NotificationService.Application.Models;
 using NotificationService.Domain.Entities;
 using NotificationService.Infrastructure.Configuration;
 
 namespace NotificationService.Infrastructure.Storage;
 
+/// <summary>
+/// Azure Table Storage implementation of <see cref="IAuditStore"/>.
+/// </summary>
 public sealed class AzureTableAuditStore : IAuditStore
 {
     private readonly TableClient _table;
 
     public AzureTableAuditStore(
         IOptions<AuditStorageOptions> options)
+        : this(CreateTable(options.Value))
     {
-        var settings = options.Value;
+    }
 
+    internal AzureTableAuditStore(
+        TableClient table)
+    {
+        _table = table;
+    }
+
+    private static TableClient CreateTable(
+        AuditStorageOptions settings)
+    {
         if (string.IsNullOrWhiteSpace(settings.ConnectionString))
         {
             throw new InvalidOperationException(
                 "AuditStorage:ConnectionString is not configured.");
         }
 
-        _table = new TableClient(
+        return new TableClient(
             settings.ConnectionString,
             settings.TableName);
     }
@@ -132,4 +146,69 @@ public sealed class AzureTableAuditStore : IAuditStore
             return false;
         }
     }
+
+    /// <inheritdoc />
+    public async Task<PagedResult<NotificationLogItem>> QueryAsync(
+        NotificationLogQuery query,
+        CancellationToken cancellationToken)
+    {
+        await EnsureTableAsync(cancellationToken);
+
+        // Channel, status and date range are filtered by Table Storage; the recipient "contains"
+        // filter and newest-first ordering are applied in memory.
+        var filter = TableScan.And(
+            query.Channel is { } channel
+                ? TableClient.CreateQueryFilter($"PartitionKey eq {channel.ToString()}")
+                : null,
+            query.Status is { } status
+                ? TableClient.CreateQueryFilter($"Status eq {status.ToString()}")
+                : null,
+            query.FromUtc is { } from
+                ? TableClient.CreateQueryFilter($"CreatedAtUtc ge {from.UtcDateTime}")
+                : null,
+            query.ToUtc is { } to
+                ? TableClient.CreateQueryFilter($"CreatedAtUtc lt {to.UtcDateTime}")
+                : null);
+
+        var (rows, truncated) = await TableScan.ReadAsync<NotificationAuditEntity>(
+            _table,
+            filter,
+            TableScan.MaxRows,
+            cancellationToken);
+
+        var recipient = query.Recipient?.Trim();
+
+        var items = rows
+            .Where(x => string.IsNullOrEmpty(recipient) ||
+                        x.Recipient.Contains(recipient, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .Select(ToLogItem)
+            .ToList();
+
+        return PagedResult.Create(
+            items,
+            query.Page,
+            query.PageSize,
+            truncated);
+    }
+
+    private static NotificationLogItem ToLogItem(
+        NotificationAuditEntity entity) =>
+        new()
+        {
+            Id = entity.RowKey,
+            Channel = entity.Channel,
+            Recipient = entity.Recipient,
+            Status = entity.Status,
+            CreatedAtUtc = AsUtc(entity.CreatedAtUtc),
+            UpdatedAtUtc = AsUtc(entity.UpdatedAtUtc),
+            ProviderMessageId = entity.ProviderMessageId,
+            ErrorCode = entity.ErrorCode,
+            ErrorMessage = entity.ErrorMessage,
+            RetryCount = entity.RetryCount,
+            HasAttachment = !string.IsNullOrEmpty(entity.BlobName)
+        };
+
+    private static DateTimeOffset AsUtc(DateTime value) =>
+        new(DateTime.SpecifyKind(value, DateTimeKind.Utc));
 }

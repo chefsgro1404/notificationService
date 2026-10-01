@@ -3,6 +3,9 @@ using Azure.Data.Tables;
 
 namespace NotificationService.Domain.Entities;
 
+/// <summary>
+/// Azure Table Storage row that audits a notification (partition = channel, row = notification id).
+/// </summary>
 public sealed class NotificationAuditEntity : ITableEntity
 {
     public string PartitionKey { get; set; } = string.Empty;

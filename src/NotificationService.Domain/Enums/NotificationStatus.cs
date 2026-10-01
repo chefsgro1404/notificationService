@@ -1,5 +1,8 @@
 ﻿namespace NotificationService.Domain.Enums;
 
+/// <summary>
+/// Lifecycle status of a notification.
+/// </summary>
 public enum NotificationStatus
 {
     Accepted = 1,

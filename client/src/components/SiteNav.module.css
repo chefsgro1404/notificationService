@@ -1,0 +1,151 @@
+.bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.wordmarkName {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.wordmarkAccent {
+  color: var(--brand);
+}
+
+.wordmarkTag {
+  margin-top: 3px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand:hover .wordmarkTag {
+  color: var(--brand);
+}
+
+.brand img {
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+}
+
+.link {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--text);
+  background: var(--background);
+}
+
+.link:focus-visible,
+.signOut:focus-visible,
+.brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.current {
+  color: var(--accent);
+  background: var(--background);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--brand);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.signOut {
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.signOut:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+@media (max-width: 640px) {
+  .who {
+    display: none;
+  }
+}

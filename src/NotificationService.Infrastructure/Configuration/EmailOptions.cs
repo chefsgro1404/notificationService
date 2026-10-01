@@ -1,5 +1,8 @@
 ﻿namespace NotificationService.Infrastructure.Configuration;
 
+/// <summary>
+/// Email delivery settings, including the provider to use ("Email" section).
+/// </summary>
 public sealed class EmailOptions
 {
     public const string SectionName = "Email";

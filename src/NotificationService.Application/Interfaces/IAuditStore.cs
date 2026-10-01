@@ -1,4 +1,6 @@
-﻿namespace NotificationService.Application.Interfaces;
+﻿using NotificationService.Application.Models;
+
+namespace NotificationService.Application.Interfaces;
 
 /// <summary>
 /// Defines operations for storing and updating notification audit records.
@@ -56,5 +58,15 @@ public interface IAuditStore
     Task<bool> HasBeenProcessedAsync(
         Guid notificationId,
         string channel,
-        CancellationToken cancellationToken);       
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Reads a filtered page of notification audit records, newest first.
+    /// </summary>
+    /// <param name="query">Filters and paging.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>The requested page of audit records.</returns>
+    Task<PagedResult<NotificationLogItem>> QueryAsync(
+        NotificationLogQuery query,
+        CancellationToken cancellationToken);
 }

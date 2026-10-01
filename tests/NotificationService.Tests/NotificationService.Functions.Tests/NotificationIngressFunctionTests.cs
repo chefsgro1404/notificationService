@@ -614,6 +614,43 @@ public class NotificationIngressFunctionTests
     }
 
     [Fact]
+    public async Task Run_SkipsNullFiles()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+
+        context.Request.ContentType = "multipart/form-data; boundary=test";
+
+        context.Request.Form = new FormCollection(
+            new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
+            {
+                ["channel"] = "Email",
+                ["recipient"] = "test@example.com",
+                ["text"] = "Hello"
+            },
+            new FormFileCollection { null! });
+
+        var function = CreateFunction();
+
+        // Act
+        var result = await function.Run(
+            context.Request,
+            CancellationToken.None);
+
+        // Assert
+        Assert.IsType<AcceptedResult>(result);
+
+        _blobStorage.Verify(x =>
+            x.UploadAsync(
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task Run_SkipsEmptyFiles()
     {
         // Arrange

@@ -6,6 +6,9 @@ using NotificationService.Infrastructure.Configuration;
 
 namespace NotificationService.Infrastructure.Email;
 
+/// <summary>
+/// Sends email through Azure Communication Services Email.
+/// </summary>
 public sealed class AzureCommunicationEmailSender
     : IEmailSender
 {
@@ -14,11 +17,23 @@ public sealed class AzureCommunicationEmailSender
 
     public AzureCommunicationEmailSender(
         IOptions<AzureCommunicationServicesOptions> options)
+        : this(CreateClient(options.Value), options)
+    {
+    }
+
+    internal AzureCommunicationEmailSender(
+        EmailClient client,
+        IOptions<AzureCommunicationServicesOptions> options)
     {
         _options = options.Value;
+        _client = client;
+    }
 
+    private static EmailClient CreateClient(
+        AzureCommunicationServicesOptions options)
+    {
         if (string.IsNullOrWhiteSpace(
-                _options.ConnectionString))  
+                options.ConnectionString))
         {
             throw new InvalidOperationException(
                 "AzureCommunicationServices:ConnectionString " +
@@ -26,15 +41,15 @@ public sealed class AzureCommunicationEmailSender
         }
 
         if (string.IsNullOrWhiteSpace(
-                _options.SenderAddress))
+                options.SenderAddress))
         {
             throw new InvalidOperationException(
                 "AzureCommunicationServices:SenderAddress " +
                 "is required.");
         }
 
-        _client = new EmailClient(
-            _options.ConnectionString);
+        return new EmailClient(
+            options.ConnectionString);
     }
 
     /// <inheritdoc />
