@@ -207,8 +207,6 @@ using the function key.
 | `Speech:Region` | `Speech__Region` | `southeastasia` (appsettings.json) | Region of the Speech resource |
 | `Speech:VoiceName` | `Speech__VoiceName` | `en-US-JennyNeural` | Any [neural voice](https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts); its locale prefix becomes the SSML language |
 | `Speech:TimeoutSeconds` | `Speech__TimeoutSeconds` | `30` | HTTP timeout for the Speech call |
-| `AuditStorage:TextToSpeechTableName` | `AuditStorage__TextToSpeechTableName` | `TextToSpeechLog` | Audio log table; created if it does not exist |
-| `AuditStorage:AudioCategoryTableName` | `AuditStorage__AudioCategoryTableName` | `AudioCategory` | Category table; created if it does not exist |
 
 The endpoint is derived from the region:
 `https://<region>.tts.speech.microsoft.com/cognitiveservices/v1`. The resource endpoint
@@ -309,12 +307,10 @@ settings** on the Function App (`__` replaces `:` in setting names):
 | `Speech__Region` | `southeastasia` (default in appsettings.json) | New, optional |
 | `Speech__VoiceName` | `en-US-JennyNeural` (default) | New, optional |
 | `Speech__TimeoutSeconds` | `30` (default) | New, optional |
-| `AuditStorage__TextToSpeechTableName` | `TextToSpeechLog` (default) | New, optional |
-| `AuditStorage__AudioCategoryTableName` | `AudioCategory` (default) | New, optional |
 | `Voice__MaxCallAttempts` | `0` = call each recipient once, no retry (default) | Changed |
-| `Voice__AudioFolder`, `Voice__AudioFileName` | **Remove**; audio now comes from the category | Removed |
+| `Voice__AudioFolder`, `Voice__AudioFileName` | **Remove** if set: the audio comes from the category, always `T2A/{notificationId}.wav` | Removed |
 | `BlobStorage__ConnectionString` | Storage account connection string with account key (signs SAS URLs) | Existing |
-| `AuditStorage__ConnectionString` | Table Storage connection string | Existing |
+| `AuditStorage__ConnectionString` | Table Storage connection string; the `TextToSpeechLog` and `AudioCategory` tables (fixed names) are created on first use | Existing |
 | `AzureCommunicationServices__ConnectionString` | ACS connection string (**secret**) | Existing |
 | `AzureCommunicationServices__CallerPhoneNumber` | ACS number calls are made from (not a recipient) | Existing |
 | `AzureCommunicationServices__CallbackBaseUrl` | `https://<function-app>.azurewebsites.net` | Existing |

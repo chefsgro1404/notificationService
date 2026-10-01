@@ -506,6 +506,6 @@ public class LogRegistrationTests
 
         Assert.IsType<AzureTableTextToSpeechLogStore>(provider.GetRequiredService<ITextToSpeechLogStore>());
         Assert.Same(TimeProvider.System, provider.GetRequiredService<TimeProvider>());
-        Assert.Equal("TextToSpeechLog", new AuditStorageOptions().TextToSpeechTableName);
+        Assert.Equal("TextToSpeechLog", AzureTableTextToSpeechLogStore.TableName);
     }
 }

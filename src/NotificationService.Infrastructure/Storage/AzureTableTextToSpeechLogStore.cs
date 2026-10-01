@@ -10,13 +10,16 @@ using NotificationService.Infrastructure.Configuration;
 namespace NotificationService.Infrastructure.Storage;
 
 /// <summary>
-/// Azure Table Storage implementation of <see cref="ITextToSpeechLogStore"/>. The table
-/// (AuditStorage:TextToSpeechTableName, default "TextToSpeechLog") is created if it does not exist.
+/// Azure Table Storage implementation of <see cref="ITextToSpeechLogStore"/>. The <see cref="TableName"/> table,
+/// in the AuditStorage account, is created before the first operation if it does not exist.
 /// Rows are keyed by notification id; integer ids come from a counter row updated with optimistic
 /// concurrency and are looked up with a filter on the Id column.
 /// </summary>
 public sealed class AzureTableTextToSpeechLogStore : ITextToSpeechLogStore
 {
+    /// <summary>Name of the text-to-speech log table.</summary>
+    public const string TableName = "TextToSpeechLog";
+
     /// <summary>Row key of the counter that issues audio ids.</summary>
     internal const string CounterRowKey = "audio-id";
 
@@ -55,7 +58,7 @@ public sealed class AzureTableTextToSpeechLogStore : ITextToSpeechLogStore
 
         return new TableClient(
             settings.ConnectionString,
-            settings.TextToSpeechTableName);
+            TableName);
     }
 
     private async Task EnsureTableAsync(

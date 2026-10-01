@@ -9,12 +9,15 @@ using NotificationService.Infrastructure.Configuration;
 namespace NotificationService.Infrastructure.Storage;
 
 /// <summary>
-/// Azure Table Storage implementation of <see cref="IAudioCategoryStore"/>. The table
-/// (AuditStorage:AudioCategoryTableName, default "AudioCategory") is created if it does not exist;
-/// category ids come from a counter row in the same table.
+/// Azure Table Storage implementation of <see cref="IAudioCategoryStore"/>. The <see cref="TableName"/> table,
+/// in the AuditStorage account, is created before the first operation if it does not exist; category ids come
+/// from a counter row in the same table.
 /// </summary>
 public sealed class AzureTableAudioCategoryStore : IAudioCategoryStore
 {
+    /// <summary>Name of the audio category table.</summary>
+    public const string TableName = "AudioCategory";
+
     /// <summary>Row key of the counter that issues category ids.</summary>
     internal const string CounterRowKey = "category-id";
 
@@ -53,7 +56,7 @@ public sealed class AzureTableAudioCategoryStore : IAudioCategoryStore
 
         return new TableClient(
             settings.ConnectionString,
-            settings.AudioCategoryTableName);
+            TableName);
     }
 
     private async Task EnsureTableAsync(

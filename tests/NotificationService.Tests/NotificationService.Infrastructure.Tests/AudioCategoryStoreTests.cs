@@ -47,7 +47,7 @@ public class AzureTableAudioCategoryStoreTests
         Assert.NotNull(new AzureTableAudioCategoryStore(
             Options.Create(new AuditStorageOptions { ConnectionString = "UseDevelopmentStorage=true" }),
             TimeProvider.System));
-        Assert.Equal("AudioCategory", new AuditStorageOptions().AudioCategoryTableName);
+        Assert.Equal("AudioCategory", AzureTableAudioCategoryStore.TableName);
     }
 
     [Fact]
