@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NotificationService.Application.Interfaces;
 using NotificationService.Infrastructure.Configuration;
 using NotificationService.Infrastructure.Email;
+using NotificationService.Infrastructure.Health;
 using NotificationService.Infrastructure.Messaging;
 using NotificationService.Infrastructure.Speech;
 using NotificationService.Infrastructure.Storage;
@@ -12,7 +13,7 @@ using NotificationService.Infrastructure.Voice;
 namespace NotificationService.Infrastructure.DependencyInjection;
 
 /// <summary>
-/// Registers infrastructure services (storage, audit, email, voice, speech and messaging) with dependency injection.
+/// Registers infrastructure services (storage, audit, email, voice, speech, messaging and health checks) with dependency injection.
 /// </summary>
 public static class InfrastructureServiceExtensions
 {
@@ -134,7 +135,42 @@ public static class InfrastructureServiceExtensions
             configuration);
 
 
+        // ----------------------------------------
+        // Health checks (read-only, cached; see /api/health)
+        // ----------------------------------------
+
+        AddDependencyHealthChecks(
+            services,
+            configuration);
+
+
         return services;
+    }
+
+
+    private static void AddDependencyHealthChecks(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<HealthCheckOptions>(
+            configuration.GetSection(
+                HealthCheckOptions.SectionName));
+
+        var timeout = TimeSpan.FromSeconds(
+            configuration.GetValue(
+                $"{HealthCheckOptions.SectionName}:{nameof(HealthCheckOptions.TimeoutSeconds)}",
+                10));
+
+        // Singletons so the Azure clients inside each check are created once, not on every run.
+        services.AddSingleton<ServiceBusHealthCheck>();
+        services.AddSingleton<StorageHealthCheck>();
+        services.AddSingleton<AcsHealthCheck>();
+        services.AddSingleton<HealthReportCache>();
+
+        services.AddHealthChecks()
+            .AddCheck<ServiceBusHealthCheck>("serviceBus", timeout: timeout)
+            .AddCheck<StorageHealthCheck>("storage", timeout: timeout)
+            .AddCheck<AcsHealthCheck>("acs", timeout: timeout);
     }
 
 

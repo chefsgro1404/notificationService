@@ -58,13 +58,13 @@ describe("proxy", () => {
     expect(response.headers.get("x-middleware-next")).toBe("1");
   });
 
-  it("does not run on the sign-in flow, login page or static files", () => {
+  it("does not run on the sign-in flow, login page, health checks or static files", () => {
     const matcher = new RegExp(`^${config.matcher[0]}$`);
 
-    for (const path of ["/api/auth/login", "/api/auth/callback", "/login", "/_next/static/x.js", "/favicon.ico", "/chefsrhere-logo.png"]) {
+    for (const path of ["/api/auth/login", "/api/auth/callback", "/api/health", "/api/health/live", "/login", "/_next/static/x.js", "/favicon.ico", "/chefsrhere-logo.png"]) {
       expect(matcher.test(path), path).toBe(false);
     }
-    for (const path of ["/", "/audio-logs", "/api/tts", "/unauthorized", "/login-help"]) {
+    for (const path of ["/", "/audio-logs", "/api/tts", "/unauthorized", "/login-help", "/api/healthx", "/api/health/other"]) {
       expect(matcher.test(path), path).toBe(true);
     }
   });

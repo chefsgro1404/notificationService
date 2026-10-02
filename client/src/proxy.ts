@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Everything except the sign-in flow, the login page, static files and the logo.
-    "/((?!api/auth/|login$|_next/static|_next/image|favicon\\.ico|chefsrhere-logo\\.png).*)",
+    // Everything except the sign-in flow, the login page, the public health checks, static files and the logo.
+    "/((?!api/auth/|api/health$|api/health/live$|login$|_next/static|_next/image|favicon\\.ico|chefsrhere-logo\\.png).*)",
   ],
 };
